@@ -250,13 +250,13 @@ public class VegaBuildManager : IVegaBuildManager
             {
                 if (memoryInfo.IsCriticalMemory)
                 {
-                    _logger.LogError("CRITICAL: Very low memory during build: {FreeMB}MB free",
-                        memoryInfo.FreeMemoryMB);
+                    _logger.LogError("CRITICAL: Very low memory during build: {AvailableMB}MB available (Free: {FreeMB}MB, Inactive: {InactiveMB}MB)",
+                        memoryInfo.AvailableMemoryMB, memoryInfo.FreeMemoryMB, memoryInfo.InactiveMemoryMB);
                 }
                 else if (memoryInfo.IsLowMemory)
                 {
-                    _logger.LogWarning("Low memory during build: {FreeMB}MB free",
-                        memoryInfo.FreeMemoryMB);
+                    _logger.LogWarning("Low memory during build: {AvailableMB}MB available (Free: {FreeMB}MB, Inactive: {InactiveMB}MB)",
+                        memoryInfo.AvailableMemoryMB, memoryInfo.FreeMemoryMB, memoryInfo.InactiveMemoryMB);
                 }
             }
         }

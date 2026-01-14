@@ -89,6 +89,10 @@ public sealed class DebugAppInfoSettings : CommandSettings
 {
 }
 
+public sealed class DebugLogInfoSettings : CommandSettings
+{
+}
+
 [Description("Show application package information")]
 public sealed class DebugAppInfoCommand : AsyncCommand<DebugAppInfoSettings>
 {
@@ -187,7 +191,7 @@ public sealed class DebugBundleSizeCommand : AsyncCommand<DebugBundleSizeSetting
     {
         try
         {
-            var rule = new Rule("[bold blue]📦 Bundle Size Analysis[/]")
+            var rule = new Rule("[bold blue]Bundle Size Analysis[/]")
                 .RuleStyle("blue");
             AnsiConsole.Write(rule);
 
@@ -238,7 +242,7 @@ public sealed class DebugBundleSizeCommand : AsyncCommand<DebugBundleSizeSetting
 
                     AnsiConsole.Write(summaryPanel);
 
-                    if (totalSize > 5 * 1024 * 1024) // 5MB warning
+                    if (totalSize > 5 * 1024 * 1024) 
                     {
                         AnsiConsole.MarkupLine("[yellow]WARNING:[/] Large bundle size detected - consider code splitting");
                     }
@@ -290,7 +294,7 @@ public sealed class DebugNativeLogsCommand : AsyncCommand<DebugNativeLogsSetting
     {
         try
         {
-            var rule = new Rule("[bold blue]📝 Native Build Logs[/]")
+            var rule = new Rule("[bold blue]Native Build Logs[/]")
                 .RuleStyle("blue");
             AnsiConsole.Write(rule);
 

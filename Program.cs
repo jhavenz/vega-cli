@@ -115,6 +115,8 @@ class Program
             .WithDescription("Restart virtual device");
         config.AddCommand<DeviceStatusCommand>("device-status")
             .WithDescription("Show device and system status");
+        config.AddCommand<DeviceLogInfoCommand>("device-get-log-info")
+            .WithDescription("Get detailed log information from the device (calls kepler device get-log-info)");
         config.AddCommand<DevicePortForwardCommand>("port-forward")
             .WithDescription("Set up port forwarding to device");
         config.AddCommand<DevicePortForwardStopCommand>("port-stop")
@@ -220,6 +222,7 @@ class Program
                 ("device-stop", "Stop virtual device cleanly"),
                 ("device-restart", "Restart virtual device"),
                 ("device-status", "Show device and system status"),
+                ("device-get-log-info", "Get detailed log information from the device"),
                 ("port-forward", "Set up port forwarding to device"),
                 ("port-stop", "Stop port forwarding")
             },

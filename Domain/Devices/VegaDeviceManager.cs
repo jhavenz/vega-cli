@@ -38,6 +38,12 @@ public class VegaDeviceManager : IVegaDeviceManager
         }
     }
 
+    public async Task<(bool Success, string Output, string Error)> GetLogInfoAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Getting Kepler device log information...");
+        return await RunKeplerCommandAsync("device get-log-info", cancellationToken);
+    }
+
     public async Task<bool> StartAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Starting Vega Virtual Device...");
@@ -141,13 +147,13 @@ public class VegaDeviceManager : IVegaDeviceManager
             {
                 if (memoryInfo.IsCriticalMemory)
                 {
-                    _logger.LogError("CRITICAL: Very low memory during {Operation}: {FreeMB}MB free",
-                        operationName, memoryInfo.FreeMemoryMB);
+                    _logger.LogError("CRITICAL: Very low memory during {Operation}: {AvailableMB}MB available (Free: {FreeMB}MB, Inactive: {InactiveMB}MB)",
+                        operationName, memoryInfo.AvailableMemoryMB, memoryInfo.FreeMemoryMB, memoryInfo.InactiveMemoryMB);
                 }
                 else if (memoryInfo.IsLowMemory)
                 {
-                    _logger.LogWarning("Low memory during {Operation}: {FreeMB}MB free",
-                        operationName, memoryInfo.FreeMemoryMB);
+                    _logger.LogWarning("Low memory during {Operation}: {AvailableMB}MB available (Free: {FreeMB}MB, Inactive: {InactiveMB}MB)",
+                        operationName, memoryInfo.AvailableMemoryMB, memoryInfo.FreeMemoryMB, memoryInfo.InactiveMemoryMB);
                 }
             }
         }

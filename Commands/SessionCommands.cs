@@ -61,8 +61,8 @@ public sealed class SessionStartCommand : AsyncCommand<SessionStartSettings>
                     table.AddColumn("[bold]Details[/]");
 
                     table.AddRow("Memory", 
-                        memory.IsCriticalMemory ? "[red]Critical[/]" : memory.IsLowMemory ? "[yellow]Low[/]" : "[green]OK[/]", 
-                        $"{memory.FreeMemoryMB}MB free");
+                        memory.IsCriticalMemory ? "[red]Critical[/]" : memory.IsLowMemory ? "[yellow]Low[/]" : "[green]Healthy/Green[/]", 
+                        $"{memory.AvailableMemoryMB}MB available");
                     table.AddRow("Processes", 
                         crashpadCount > 0 ? "[yellow]Cleanup needed[/]" : "[green]Clean[/]", 
                         $"{crashpadCount} crashpad processes");
@@ -186,7 +186,7 @@ public sealed class SessionStopCommand : AsyncCommand<SessionStopSettings>
             table.AddColumn("[bold]Value[/]");
 
             table.AddRow("Remaining processes", finalCrashpadCount.ToString());
-            table.AddRow("Available memory", $"{memory.FreeMemoryMB}MB");
+            table.AddRow("Available memory", $"{memory.AvailableMemoryMB}MB");
 
             AnsiConsole.Write(table);
 
@@ -268,8 +268,8 @@ public sealed class SessionStatusCommand : AsyncCommand<SessionStatusSettings>
             systemTable.AddColumn("[bold]Details[/]");
 
             systemTable.AddRow("Memory", 
-                memory.IsCriticalMemory ? "[red]Critical[/]" : memory.IsLowMemory ? "[yellow]Low[/]" : "[green]OK[/]", 
-                $"{memory.FreeMemoryMB}MB free");
+                memory.IsCriticalMemory ? "[red]Critical[/]" : memory.IsLowMemory ? "[yellow]Low[/]" : "[green]Healthy/Green[/]", 
+                $"{memory.AvailableMemoryMB}MB available");
             systemTable.AddRow("Crashpad processes", 
                 crashpadCount > 0 ? "[yellow]Present[/]" : "[green]Clean[/]", 
                 crashpadCount.ToString());

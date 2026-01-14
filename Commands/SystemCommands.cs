@@ -53,14 +53,15 @@ public sealed class SystemStatusCommand : AsyncCommand<SystemStatusSettings>
             memoryTable.AddColumn("[bold]Metric[/]");
             memoryTable.AddColumn("[bold]Value[/]");
 
+            memoryTable.AddRow("Available", $"{memory.AvailableMemoryMB}MB");
             memoryTable.AddRow("Free", $"{memory.FreeMemoryMB}MB");
-            memoryTable.AddRow("Active", $"{memory.ActiveMemoryMB}MB");
             memoryTable.AddRow("Inactive", $"{memory.InactiveMemoryMB}MB");
+            memoryTable.AddRow("Active", $"{memory.ActiveMemoryMB}MB");
 
             var memoryStatus = memory.IsCriticalMemory ? "[red]CRITICAL: Very low memory![/]" :
                              memory.IsLowMemory ? "[yellow]WARNING: Low memory detected[/]" :
-                             "[green]Memory levels OK[/]";
-            memoryTable.AddRow("Status", memoryStatus);
+                             "[green]Healthy/Green[/]";
+            memoryTable.AddRow("Health", memoryStatus);
 
             AnsiConsole.Write(memoryTable);
             AnsiConsole.WriteLine();
@@ -85,7 +86,7 @@ public sealed class SystemStatusCommand : AsyncCommand<SystemStatusSettings>
                 {
                     var parts = p.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                     return parts.Length > 1 ? $"PID {parts[1]}: {parts[^1]}" : p;
-                }).Concat(processes.Count > 3 ? new[] { $"... and {processes.Count - 3} more" } : [])))
+                }).Concat(processes.Count > 3 ? new[] { $"... and {processes.Count - 3} more" } : Array.Empty<string>())))
                 {
                     Header = new PanelHeader("Orphaned Processes"),
                     Border = BoxBorder.Rounded,
@@ -304,8 +305,8 @@ public sealed class SystemMonitorCommand : AsyncCommand<SystemMonitorSettings>
                 .BorderColor(Color.Grey);
 
             table.AddColumn("[bold]Time[/]");
+            table.AddColumn("[bold]Available MB[/]");
             table.AddColumn("[bold]Free MB[/]");
-            table.AddColumn("[bold]Active MB[/]");
             table.AddColumn("[bold]Status[/]");
 
             using var cts = new CancellationTokenSource();
@@ -323,7 +324,7 @@ public sealed class SystemMonitorCommand : AsyncCommand<SystemMonitorSettings>
 
                 var time = DateTime.Now.ToString("HH:mm:ss");
                 
-                table.AddRow(time, memory.FreeMemoryMB.ToString(), memory.ActiveMemoryMB.ToString(), status);
+                table.AddRow(time, memory.AvailableMemoryMB.ToString(), memory.FreeMemoryMB.ToString(), status);
                 
                 AnsiConsole.Clear();
                 AnsiConsole.Write(rule);

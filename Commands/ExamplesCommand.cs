@@ -153,26 +153,23 @@ public sealed class ExamplesCommand : Command<ExamplesSettings>
         table.AddRow("[cyan]vega device-restart[/]", "Restart virtual device");
         table.AddRow("[cyan]vega device-restart --cleanup-proxy false[/]", "Restart without proxy cleanup");
         table.AddRow("[cyan]vega device-status[/]", "Show device and system status");
+        table.AddRow("[cyan]vega device-get-log-info[/]", "Get detailed log information from the device");
 
         AnsiConsole.Write(table);
     }
 
     private static void ShowCompleteWorkflows()
     {
-        var panel = new Panel("""
-        [bold]Full development session[/]
-        vega session-start             # Setup everything
-        vega dev                       # Build and run your app
-        
-        [bold]Quality assurance workflow[/]
-        vega quality-check             # All quality checks
-        vega build-release             # Production build
-        
-        [bold]Quick debugging workflow[/]
-        vega system-status             # Check system health
-        vega device-restart            # Fresh device start
-        vega dev --type debug          # Build and deploy
-        """)
+        var panel = new Panel("[bold]Full development session[/]\n" +
+                              "vega session-start             # Setup everything\n" +
+                              "vega dev                       # Build and run your app\n\n" +
+                              "[bold]Quality assurance workflow[/]\n" +
+                              "vega quality-check             # All quality checks\n" +
+                              "vega build-release             # Production build\n\n" +
+                              "[bold]Quick debugging workflow[/]\n" +
+                              "vega system-status             # Check system health\n" +
+                              "vega device-restart            # Fresh device start\n" +
+                              "vega dev --type debug          # Build and deploy")
         {
             Header = new PanelHeader("Complete Workflows"),
             Border = BoxBorder.Rounded,

@@ -8,4 +8,5 @@ public interface IVegaDeviceManager
     Task<bool> RestartAsync(CancellationToken cancellationToken = default);
     Task<bool> EnsureRunningAsync(CancellationToken cancellationToken = default);
     Task<VirtualDeviceStatus> GetStatusAsync(CancellationToken cancellationToken = default);
+    Task<(bool Success, string Output, string Error)> GetLogInfoAsync(CancellationToken cancellationToken = default);
 }

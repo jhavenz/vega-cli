@@ -59,7 +59,9 @@ public sealed class DeviceStatusCommand : AsyncCommand<DeviceStatusSettings>
                 table.AddRow("Process ID", status.ProcessId.Qemu.ToString());
             }
 
+            table.AddRow("Available Memory", $"{memory.AvailableMemoryMB}MB");
             table.AddRow("Free Memory", $"{memory.FreeMemoryMB}MB");
+            table.AddRow("Inactive Memory", $"{memory.InactiveMemoryMB}MB");
             table.AddRow("Active Memory", $"{memory.ActiveMemoryMB}MB");
             table.AddRow("Crashpad Processes", crashpadCount.ToString());
 
@@ -80,6 +82,53 @@ public sealed class DeviceStatusCommand : AsyncCommand<DeviceStatusSettings>
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get device status");
+            AnsiConsole.MarkupLine($"[red]Error: {ex.Message}[/]");
+            return 1;
+        }
+    }
+}
+
+public sealed class DeviceLogInfoSettings : CommandSettings
+{
+}
+
+[Description("Get detailed log information from the device")]
+public sealed class DeviceLogInfoCommand : AsyncCommand<DeviceLogInfoSettings>
+{
+    private readonly IVegaDeviceManager _deviceManager;
+    private readonly ILogger<DeviceLogInfoCommand> _logger;
+
+    public DeviceLogInfoCommand(IVegaDeviceManager deviceManager, ILogger<DeviceLogInfoCommand> logger)
+    {
+        _deviceManager = deviceManager;
+        _logger = logger;
+    }
+
+    public override async Task<int> ExecuteAsync(CommandContext context, DeviceLogInfoSettings settings, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await _deviceManager.GetLogInfoAsync(cancellationToken);
+
+            if (result.Success)
+            {
+                var rule = new Rule("[bold blue]Kepler Device Log Information[/]")
+                    .RuleStyle("blue");
+                AnsiConsole.Write(rule);
+
+                Console.WriteLine(result.Output);
+                return 0;
+            }
+            else
+            {
+                AnsiConsole.MarkupLine("[red]Error:[/]");
+                Console.WriteLine(result.Error);
+                return 1;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get log info");
             AnsiConsole.MarkupLine($"[red]Error: {ex.Message}[/]");
             return 1;
         }

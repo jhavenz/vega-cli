@@ -18,11 +18,27 @@ public class VegaResourceMonitor : IVegaResourcesMonitor
         _logger = logger;
     }
 
+    private long? _cachedPageSize;
+
     public async Task<MemoryInfo> GetMemoryInfoAsync(CancellationToken cancellationToken = default)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             throw new PlatformNotSupportedException("Memory monitoring is only supported on macOS");
+        }
+
+        if (!_cachedPageSize.HasValue)
+        {
+            var pageSizeResult = await RunCommandAsync("sysctl", "-n hw.pagesize", cancellationToken);
+            if (pageSizeResult.Success && long.TryParse(pageSizeResult.Output.Trim(), out var pageSize))
+            {
+                _cachedPageSize = pageSize;
+            }
+            else
+            {
+                _logger.LogWarning("Failed to get page size via sysctl, defaulting to 16KB");
+                _cachedPageSize = 16384;
+            }
         }
 
         var result = await RunCommandAsync("vm_stat", "", cancellationToken);
@@ -421,6 +437,7 @@ public class VegaResourceMonitor : IVegaResourcesMonitor
     private MemoryInfo ParseMemoryInfo(string vmStatOutput)
     {
         var memoryInfo = new MemoryInfo { Timestamp = DateTime.UtcNow };
+        var pageSize = _cachedPageSize ?? 16384; // Fallback to 16KB if not set
 
         var lines = vmStatOutput.Split('\n');
 
@@ -429,17 +446,17 @@ public class VegaResourceMonitor : IVegaResourcesMonitor
             if (line.StartsWith("Pages free:"))
             {
                 var freePages = ExtractNumber(line);
-                memoryInfo.FreeMemoryMB = (freePages * 16) / 1024; // 16KB pages to MB
+                memoryInfo.FreeMemoryMB = (freePages * pageSize) / (1024 * 1024);
             }
             else if (line.StartsWith("Pages active:"))
             {
                 var activePages = ExtractNumber(line);
-                memoryInfo.ActiveMemoryMB = (activePages * 16) / 1024;
+                memoryInfo.ActiveMemoryMB = (activePages * pageSize) / (1024 * 1024);
             }
             else if (line.StartsWith("Pages inactive:"))
             {
                 var inactivePages = ExtractNumber(line);
-                memoryInfo.InactiveMemoryMB = (inactivePages * 16) / 1024;
+                memoryInfo.InactiveMemoryMB = (inactivePages * pageSize) / (1024 * 1024);
             }
         }
 
